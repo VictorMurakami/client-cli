@@ -1,7 +1,7 @@
 {
-  "name": "@kami/client-cli",
-  "version": "1.0.0",
-  "description": "CLI interativo para iniciar projetos Expo com cliente definido (desktop, xturbo, velus)",
+  "name": "@kamidev/client-cli",
+  "version": "1.0.1",
+  "description": "CLI interativo para iniciar projetos Expo com cliente definido",
   "type": "module",
   "bin": {
     "client": "./cli/client-cli.js"
