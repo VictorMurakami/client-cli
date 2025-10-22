@@ -9,7 +9,7 @@ Uma CLI simples e dinâmica para iniciar e gerenciar builds de clientes no proje
 Instale globalmente:
 
 ```bash
-npm install -g client-cli
+npm install -g @kamidev/client-cli
 ```
 
 Após isso, você poderá rodar diretamente:
