@@ -2,8 +2,11 @@
 
 import inquirer from "inquirer";
 import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
 
-const clients = ["desktop", "xturbo", "velus"];
+const CONFIGS_PATH = path.resolve("./client-configs");
+
 const commands = [
   { name: "Gerar Prebuild (clean) 🧩", value: "cleanprebuild" },
   { name: "Gerar Prebuild 🧩", value: "prebuild" },
@@ -14,6 +17,26 @@ const commands = [
 
 (async () => {
   console.log("\n✨ CLI de Inicialização por Kami\n");
+
+  // 🔍 Verifica se a pasta client-configs existe
+  if (!fs.existsSync(CONFIGS_PATH)) {
+    console.error("❌ A pasta './client-configs' não foi encontrada.");
+    process.exit(1);
+  }
+
+  // 📁 Lê as subpastas dentro de ./client-configs
+  const clients = fs
+    .readdirSync(CONFIGS_PATH)
+    .filter((name) => {
+      const fullPath = path.join(CONFIGS_PATH, name);
+      return fs.statSync(fullPath).isDirectory();
+    })
+    .sort();
+
+  if (clients.length === 0) {
+    console.error("⚠️ Nenhum cliente encontrado em './client-configs'.");
+    process.exit(1);
+  }
 
   const { client } = await inquirer.prompt([
     {
