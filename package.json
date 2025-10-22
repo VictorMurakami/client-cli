@@ -1,10 +1,22 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "@kami/client-cli",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "CLI interativo para iniciar projetos Expo com cliente definido (desktop, xturbo, velus)",
+  "type": "module",
+  "bin": {
+    "client": "./cli/client-cli.js"
   },
-  "private": true
+  "keywords": ["expo", "cli", "react-native", "client", "automation"],
+  "author": "Victor Murakami",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seu-usuario/client-cli.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "inquirer": "^9.3.6"
+  }
 }
