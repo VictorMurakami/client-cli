@@ -20,9 +20,9 @@ const commands = [
   { name: "Gerar Prebuild 🧩", value: "prebuild" },
   { name: "Rodar no iOS 🍎", value: "ios" },
   { name: "Rodar no Android 🤖", value: "android" },
+  { name: "Gerar Build Local (EAS) 📦", value: "localbuild" },
 ];
 
-// 🧭 Função que verifica se há uma nova versão publicada no npm
 async function checkForUpdates() {
   try {
     const update = await updateCheck(pkg);
@@ -33,36 +33,24 @@ async function checkForUpdates() {
       console.log("👉 Atualize com:\n   npm install -g client-cli@latest\n");
     }
   } catch {
-    // não exibe erro se falhar (sem internet, etc)
   }
 }
 
 (async () => {
   console.log("\n✨ CLI de Inicialização por Kami\n");
 
-  // ⚙️ Checa se o usuário quer ver o repositório
   if (process.argv.includes("-repo")) {
     console.log(`📦 Repositório do CLI:\n${REPO_URL}\n`);
     process.exit(0);
   }
 
-  // ⚙️ Checa se o usuário quer instrução de update
-  if (process.argv.includes("--update")) {
-    console.log("\n⬆️ Para atualizar o CLI:");
-    console.log("npm install -g client-cli@latest\n");
-    process.exit(0);
-  }
-
-  // 🔎 Verifica se há nova versão
   await checkForUpdates();
 
-  // 🔍 Verifica se a pasta client-configs existe
   if (!fs.existsSync(CONFIGS_PATH)) {
     console.error("❌ A pasta './client-configs' não foi encontrada.");
     process.exit(1);
   }
 
-  // 📁 Lê subpastas dentro de ./client-configs, ignorando "default"
   const clients = fs
     .readdirSync(CONFIGS_PATH)
     .filter((name) => {
@@ -76,7 +64,6 @@ async function checkForUpdates() {
     process.exit(1);
   }
 
-  // ➕ Adiciona cliente web
   const choices = [
     { name: "Cliente Web 🌐", value: "web-client" },
     ...clients.map((c) => ({ name: c, value: c })),
@@ -91,7 +78,6 @@ async function checkForUpdates() {
     },
   ]);
 
-  // 🖥️ Cliente web
   if (client === "web-client") {
     console.log("\n🚀 Executando comando para cliente Web:\n> npm run web\n");
 
@@ -105,7 +91,6 @@ async function checkForUpdates() {
     process.exit(0);
   }
 
-  // Pergunta ação
   const { command } = await inquirer.prompt([
     {
       type: "list",
@@ -130,6 +115,26 @@ async function checkForUpdates() {
     case "android":
       finalCommand = `CLIENT=${client} npx expo run:android`;
       break;
+
+    case "localbuild":
+      const { confirmed } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "confirmed",
+          message:
+            "Você alterou corretamente o environment.js e o eas.json com as configurações desejadas?",
+          default: false,
+        },
+      ]);
+
+      if (!confirmed) {
+        console.log("\n⚠️ Build cancelada. Ajuste os arquivos e tente novamente.\n");
+        process.exit(0);
+      }
+
+      finalCommand = `eas build --platform android --local --profile ${client}`;
+      break;
+
     default:
       console.error("❌ Comando inválido.");
       process.exit(1);
