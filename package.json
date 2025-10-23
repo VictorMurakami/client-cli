@@ -1,10 +1,10 @@
 {
   "name": "@kamidev/client-cli",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "CLI interativo para iniciar projetos Expo com cliente definido",
   "type": "module",
   "bin": {
-    "client": "./cli/client-cli.js"
+    "provider": "./cli/client-cli.js"
   },
   "keywords": ["expo", "cli", "react-native", "client", "automation"],
   "author": "Victor Murakami",

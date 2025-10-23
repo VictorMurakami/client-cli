@@ -10,7 +10,6 @@ const CONFIGS_PATH = path.resolve("./client-configs");
 const commands = [
   { name: "Gerar Prebuild (clean) 🧩", value: "cleanprebuild" },
   { name: "Gerar Prebuild 🧩", value: "prebuild" },
-  { name: "Rodar na Web 🌐", value: "web" },
   { name: "Rodar no iOS 🍎", value: "ios" },
   { name: "Rodar no Android 🤖", value: "android" },
 ];
@@ -24,12 +23,12 @@ const commands = [
     process.exit(1);
   }
 
-  // 📁 Lê as subpastas dentro de ./client-configs
+  // 📁 Lê as subpastas dentro de ./client-configs, ignorando "default"
   const clients = fs
     .readdirSync(CONFIGS_PATH)
     .filter((name) => {
       const fullPath = path.join(CONFIGS_PATH, name);
-      return fs.statSync(fullPath).isDirectory();
+      return fs.statSync(fullPath).isDirectory() && name !== "default";
     })
     .sort();
 
@@ -38,15 +37,36 @@ const commands = [
     process.exit(1);
   }
 
+  // ➕ Adiciona cliente web
+  const choices = [
+    { name: "Cliente Web 🌐", value: "web-client" },
+    ...clients.map((c) => ({ name: c, value: c })),
+  ];
+
   const { client } = await inquirer.prompt([
     {
       type: "list",
       name: "client",
       message: "Selecione o cliente:",
-      choices: clients.map((c) => ({ name: c, value: c })),
+      choices,
     },
   ]);
 
+  // 🖥️ Caso o cliente selecionado seja o "web-client", roda direto o comando
+  if (client === "web-client") {
+    console.log("\n🚀 Executando comando para cliente Web:\n> npm run web\n");
+
+    try {
+      execSync("npm run web", { stdio: "inherit", shell: true });
+    } catch (err) {
+      console.error("\n❌ Erro ao executar comando:", err.message);
+      process.exit(1);
+    }
+
+    process.exit(0);
+  }
+
+  // Se não for o cliente web, pergunta o comando
   const { command } = await inquirer.prompt([
     {
       type: "list",
@@ -65,15 +85,15 @@ const commands = [
     case "cleanprebuild":
       finalCommand = `CLIENT=${client} npx expo prebuild --clean`;
       break;
-    case "web":
-      finalCommand = `CLIENT=${client} npm run web`;
-      break;
     case "ios":
       finalCommand = `CLIENT=${client} npx expo run:ios`;
       break;
     case "android":
       finalCommand = `CLIENT=${client} npx expo run:android`;
       break;
+    default:
+      console.error("❌ Comando inválido.");
+      process.exit(1);
   }
 
   console.log(`\n🚀 Executando comando:\n> ${finalCommand}\n`);
