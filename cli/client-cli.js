@@ -4,6 +4,8 @@ import inquirer from "inquirer";
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import updateCheck from "update-check";
+import pkg from "./package.json" with { type: "json" };
 
 const CONFIGS_PATH = path.resolve("./client-configs");
 const REPO_URL = "https://github.com/VictorMurakami/client-cli";
@@ -11,17 +13,44 @@ const REPO_URL = "https://github.com/VictorMurakami/client-cli";
 const commands = [
   { name: "Gerar Prebuild (clean) 🧩", value: "cleanprebuild" },
   { name: "Gerar Prebuild 🧩", value: "prebuild" },
+  { name: "Rodar na Web 🌐", value: "web" },
   { name: "Rodar no iOS 🍎", value: "ios" },
   { name: "Rodar no Android 🤖", value: "android" },
 ];
 
+// 🧭 Função que verifica se há uma nova versão publicada no npm
+async function checkForUpdates() {
+  try {
+    const update = await updateCheck(pkg);
+    if (update && update.latest !== pkg.version) {
+      console.log(
+        `\n🔔 Nova versão disponível: ${update.latest} (você está usando ${pkg.version})`
+      );
+      console.log("👉 Atualize com:\n   npm install -g client-cli@latest\n");
+    }
+  } catch {
+    // não exibe erro se falhar (sem internet, etc)
+  }
+}
+
 (async () => {
   console.log("\n✨ CLI de Inicialização por Kami\n");
 
-  if (process.argv.includes("-repo")) {
+  // ⚙️ Checa se o usuário quer ver o repositório
+  if (process.argv.includes("--repo")) {
     console.log(`📦 Repositório do CLI:\n${REPO_URL}\n`);
     process.exit(0);
   }
+
+  // ⚙️ Checa se o usuário quer instrução de update
+  if (process.argv.includes("--update")) {
+    console.log("\n⬆️ Para atualizar o CLI:");
+    console.log("npm install -g client-cli@latest\n");
+    process.exit(0);
+  }
+
+  // 🔎 Verifica se há nova versão
+  await checkForUpdates();
 
   // 🔍 Verifica se a pasta client-configs existe
   if (!fs.existsSync(CONFIGS_PATH)) {
@@ -29,7 +58,7 @@ const commands = [
     process.exit(1);
   }
 
-  // 📁 Lê as subpastas dentro de ./client-configs, ignorando "default"
+  // 📁 Lê subpastas dentro de ./client-configs, ignorando "default"
   const clients = fs
     .readdirSync(CONFIGS_PATH)
     .filter((name) => {
@@ -58,7 +87,7 @@ const commands = [
     },
   ]);
 
-  // 🖥️ Caso o cliente selecionado seja o "web-client", roda direto o comando
+  // 🖥️ Cliente web
   if (client === "web-client") {
     console.log("\n🚀 Executando comando para cliente Web:\n> npm run web\n");
 
@@ -72,7 +101,7 @@ const commands = [
     process.exit(0);
   }
 
-  // Se não for o cliente web, pergunta o comando
+  // Pergunta ação
   const { command } = await inquirer.prompt([
     {
       type: "list",
@@ -90,6 +119,9 @@ const commands = [
       break;
     case "cleanprebuild":
       finalCommand = `CLIENT=${client} npx expo prebuild --clean`;
+      break;
+    case "web":
+      finalCommand = `CLIENT=${client} npm run web`;
       break;
     case "ios":
       finalCommand = `CLIENT=${client} npx expo run:ios`;
