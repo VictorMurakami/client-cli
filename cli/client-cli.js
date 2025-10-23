@@ -18,7 +18,7 @@ const commands = [
 (async () => {
   console.log("\n✨ CLI de Inicialização por Kami\n");
 
-  if (process.argv.includes("--repo")) {
+  if (process.argv.includes("-repo")) {
     console.log(`📦 Repositório do CLI:\n${REPO_URL}\n`);
     process.exit(0);
   }

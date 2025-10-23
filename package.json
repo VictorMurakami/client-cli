@@ -1,6 +1,6 @@
 {
   "name": "@kamidev/client-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CLI interativo para iniciar projetos Expo com cliente definido",
   "type": "module",
   "bin": {
