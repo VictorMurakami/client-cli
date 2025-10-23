@@ -13,7 +13,6 @@ const REPO_URL = "https://github.com/VictorMurakami/client-cli";
 const commands = [
   { name: "Gerar Prebuild (clean) 🧩", value: "cleanprebuild" },
   { name: "Gerar Prebuild 🧩", value: "prebuild" },
-  { name: "Rodar na Web 🌐", value: "web" },
   { name: "Rodar no iOS 🍎", value: "ios" },
   { name: "Rodar no Android 🤖", value: "android" },
 ];
@@ -119,9 +118,6 @@ async function checkForUpdates() {
       break;
     case "cleanprebuild":
       finalCommand = `CLIENT=${client} npx expo prebuild --clean`;
-      break;
-    case "web":
-      finalCommand = `CLIENT=${client} npm run web`;
       break;
     case "ios":
       finalCommand = `CLIENT=${client} npx expo run:ios`;
